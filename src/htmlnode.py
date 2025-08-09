@@ -18,3 +18,6 @@ class HTMLNode:
 
     def __repr__(self):
         return f"tag = {self.tag if not None else "None"}, value = {self.value if not None else "None"}, children = {self.children if not None else "None"}, props = {self.props if not None else "None"}"
+
+    def __eq__(self, other_html_node):
+        return self.__dict__ == other_html_node.__dict__

@@ -136,3 +136,19 @@ def text_to_textnodes(text):
         after_bold_split, "_", TextType.ITALIC)
 
     return after_italic_split
+
+
+def textnodes_to_html_nodes(textnodes):
+    return [text_node_to_html_node(node) for node in textnodes]
+
+
+def text_to_html_nodes(text):
+    textnodes = text_to_textnodes(text)
+    return textnodes_to_html_nodes(textnodes)
+
+
+def leaf_html_nodes_to_html(html_nodes):
+    html = ""
+    for html_node in html_nodes:
+        html += html_node.to_html()
+    return html

@@ -1,8 +1,8 @@
 import unittest
 
-from functions import text_node_to_html_node, split_nodes_delimiter, extract_markdown_links, extract_markdown_images, split_nodes_image, split_nodes_link, text_to_textnodes
-from blocks import markdown_to_blocks
+from functions import text_node_to_html_node, split_nodes_delimiter, extract_markdown_links, extract_markdown_images, split_nodes_image, split_nodes_link, text_to_textnodes, textnodes_to_html_nodes, leaf_html_nodes_to_html, text_to_html_nodes
 from textnode import TextNode, TextType
+from leafnode import LeafNode
 
 
 class Test_text_node_to_html_node(unittest.TestCase):
@@ -341,6 +341,72 @@ class Test_text_to_textnodes(unittest.TestCase):
             ],
             text_to_textnodes(text),
         )
+
+
+class Test_textnodes_to_html_nodes(unittest.TestCase):
+    def test_textnodes_to_html_nodes(self):
+        text_nodes_list = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode("obi wan image", TextType.IMAGE,
+                     "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev")
+        ]
+        expected_html_nodes = [
+            LeafNode(None, "This is "),
+            LeafNode("b", "text"),
+            LeafNode(None, " with an "),
+            LeafNode("i", "italic"),
+            LeafNode(None, " word and a "),
+            LeafNode("code", "code block"),
+            LeafNode(None, " and an "),
+            LeafNode("img", "", {"alt": "obi wan image",
+                                 "src": "https://i.imgur.com/fJRm4Vk.jpeg"}),
+            LeafNode(None, " and a "),
+            LeafNode("a", "link", {"href": "https://boot.dev"})
+        ]
+        self.assertListEqual(textnodes_to_html_nodes(
+            text_nodes_list), expected_html_nodes)
+
+
+class Test_text_to_html_nodes(unittest.TestCase):
+    def test_text_to_html_nodes(self):
+        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+
+        self.assertListEqual(
+            [
+                LeafNode(None, "This is "),
+                LeafNode("b", "text"),
+                LeafNode(None, " with an "),
+                LeafNode("i", "italic"),
+                LeafNode(None, " word and a "),
+                LeafNode("code", "code block"),
+                LeafNode(None, " and an "),
+                LeafNode("img", "", {"alt": "obi wan image",
+                                     "src": "https://i.imgur.com/fJRm4Vk.jpeg"}),
+                LeafNode(None, " and a "),
+                LeafNode("a", "link", {"href": "https://boot.dev"})
+            ],
+            text_to_html_nodes(text),
+        )
+
+
+class Test_leaf_html_nodes_to_html(unittest.TestCase):
+    def test_leaf_html_nodes_to_html(self):
+        html_nodes = [
+            LeafNode(None, "This is "),
+            LeafNode("b", "text"),
+            LeafNode(None, " with an "),
+            LeafNode("i", "italic")
+        ]
+        expected_html = "This is <b>text</b> with an <i>italic</i>"
+        self.assertEqual(leaf_html_nodes_to_html(html_nodes), expected_html)
 
 
 if __name__ == "__main__":
