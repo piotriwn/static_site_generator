@@ -1,0 +1,1 @@
+python3 src/main.py "/piotriwn/static_site_generator/"

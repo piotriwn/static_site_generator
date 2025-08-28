@@ -2,6 +2,7 @@ from textnode import TextNode, TextType
 import shutil
 import os
 from page import generate_page, generate_pages_recursive
+import sys
 
 
 def copy_recursive(source_path, dest_path, dry_run):
@@ -38,9 +39,13 @@ def copy_content(source_dir, target_dir, dry_run=True):
 
 
 def main():
-    node = TextNode("This is some anchor text",
-                    TextType.LINK, "https://www.boot.dev")
-    print(node)
+    if len(sys.argv) > 2:
+        print("At most a single argument can be provided.")
+        exit(1)
+    if len(sys.argv) == 1:
+        basepath = "/"
+    else:
+        basepath = sys.argv[1]
 
     # Get the directory where main.py is located
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -49,7 +54,7 @@ def main():
     project_root = os.path.dirname(script_dir)
 
     static_dir = os.path.join(project_root, "static")
-    public_dir = os.path.join(project_root, "public")
+    public_dir = os.path.join(project_root, "docs")
     content_dir = os.path.join(project_root, "content")
     template_path = os.path.join(project_root, "template.html")
 
@@ -59,7 +64,7 @@ def main():
 
     copy_content(static_dir, public_dir, dry_run=False)
 
-    generate_pages_recursive(content_dir, template_path, public_dir)
+    generate_pages_recursive(content_dir, template_path, public_dir, basepath)
 
 
 if __name__ == "__main__":
